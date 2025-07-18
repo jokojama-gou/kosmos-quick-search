@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Keio Library Searcher",
+  "version": "1.0",
+  "description": "Amazonの商品ページから慶應義塾大学の図書館蔵書を検索します。",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png"
+    }
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
