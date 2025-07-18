@@ -6,11 +6,27 @@ const KEIO_SEARCH_URL_SUFFIX = '&tab=LibraryCatalog&search_scope=MyInstitution&v
 const iframe = document.getElementById('keio-library-frame');
 const messageDiv = document.getElementById('message');
 
+// 新しいタブで開くボタンを取得
+const openInNewTabButton = document.getElementById('open-in-new-tab');
+
+// 現在の検索URLを保持する変数
+let currentSearchUrl = '';
+
 // 現在アクティブなタブの情報を取得する関数
 async function getCurrentTab() {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     return tab;
 }
+
+
+// ボタンがクリックされたら新しいタブでURLを開く
+openInNewTabButton.addEventListener('click', () => {
+    if (currentSearchUrl) {
+        chrome.tabs.create({ url: currentSearchUrl });
+    }
+});
+
+
 
 // ページからh1要素のテキストを取得する関数
 function getPageTitle() {
@@ -45,13 +61,18 @@ getCurrentTab().then(tab => {
                 // タイトルをURLエンコードして、検索URLを作成
                 const encodedTitle = encodeURIComponent(cleanedTitle.trim());
                 const searchUrl = KEIO_SEARCH_URL_PREFIX + encodedTitle + KEIO_SEARCH_URL_SUFFIX;
+                currentSearchUrl = searchUrl; // URLを保持
 
                 // iframeにURLを設定し、表示を切り替える
                 iframe.src = searchUrl;
                 iframe.style.display = 'block';
                 messageDiv.style.display = 'none';
+                openInNewTabButton.style.display = 'block'; // ボタンを表示
+
             } else {
                 messageDiv.textContent = 'このページでは商品タイトルが見つかりませんでした。';
+                openInNewTabButton.style.display = 'none'; // ボタンを非表示
+
             }
         });
     } else {
@@ -59,5 +80,8 @@ getCurrentTab().then(tab => {
         messageDiv.textContent = 'Amazonの商品ページで実行してください。';
         iframe.style.display = 'none';
         messageDiv.style.display = 'flex';
+
+        openInNewTabButton.style.display = 'none'; // ボタンを非表示
+
     }
 });
